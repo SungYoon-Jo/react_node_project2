@@ -8,7 +8,9 @@ import {
     TableHead,
     TableRow,
     Paper,
-  } from "@material-ui/core";
+    CircularProgress,
+    Box,
+} from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import createSpacing from '@material-ui/core/styles/createSpacing';
 
@@ -20,25 +22,35 @@ const styles = {
     },
     table: {
         minWidth: 1080
+    },
+    process: {
+        magin: createSpacing.unit * 2
     }
 };
 
 class App3 extends Component {
 
     state = {
-        customers: ""
+        customers: "",
+        completed: 0
     }
 
     componentDidMount() {
+        this.timer = setInterval(this.progress, 20);
         this.callApi()
-        .then(res => this.setState({customers: res}))
-        .catch(err => console.log(err));
+            .then(res => this.setState({ customers: res }))
+            .catch(err => console.log(err));
     }
 
     callApi = async () => {
         const response = await fetch('/api/customers');
         const body = await response.json();
         return body;
+    }
+
+    progress = () => {
+        const { completed } = this.state;
+        this.setState({ completed: completed >= 100 ? 0 : completed + 1 });
     }
 
     render() {
@@ -59,13 +71,21 @@ class App3 extends Component {
                     <TableBody>
                         {this.state.customers ? this.state.customers.map(c => {
                             return <Customer key={c.id}
-                             id={c.id} 
-                             image={c.image} 
-                             name={c.name} 
-                             birthday={c.birthday} 
-                             gender={c.gender} 
-                             job={c.job} />
-                        }) : ""}
+                                id={c.id}
+                                image={c.image}
+                                name={c.name}
+                                birthday={c.birthday}
+                                gender={c.gender}
+                                job={c.job} />
+                        }) :
+                            <TableRow>
+                                <TableCell colSpan="6" align="center">
+                                    <Box sx={{ display: 'flex' }}>
+                                        <CircularProgress />
+                                    </Box>
+                                </TableCell>
+                            </TableRow>
+                        }
                     </TableBody>
                 </Table>
             </Paper>
