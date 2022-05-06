@@ -1,171 +1,72 @@
-// import React, { Component } from 'react';
-// import Customer from './components/Customer'
-// import './App.css';
-// import {
-//     Table,
-//     TableBody,
-//     TableCell,
-//     TableHead,
-//     TableRow,
-//     Paper,
-//   } from "@material-ui/core";
-// import { withStyles } from '@material-ui/core/styles';
-// import createSpacing from '@material-ui/core/styles/createSpacing';
+import React from 'react'
+import { post } from 'axios';
 
-// const styles = {
-//     root: {
-//         width: "100%",
-//         marginTop: createSpacing.unit * 3,
-//         overflowX: "auto"
-//     },
-//     table: {
-//         minWidth: 1080
-//     }
-// };
-
-// const customers = [
-//     {
-//         'id': 1,
-//         'image': 'https://placeimg.com/48/48/1',
-//         'name': '홍길동',
-//         'birthday': '961222',
-//         'gender': '남자',
-//         'job': '대학생'
-//     },
-//     {
-//         'id': 2,
-//         'image': 'https://placeimg.com/48/48/2',
-//         'name': '나동빈',
-//         'birthday': '960508',
-//         'gender': '남자',
-//         'job': '프로그래머'
-//     },
-//     {
-//         'id': 3,
-//         'image': 'https://placeimg.com/48/48/3',
-//         'name': '이순신',
-//         'birthday': '961127',
-//         'gender': '남자',
-//         'job': '디자이너'
-//     }
-// ]
-
-// class App3 extends Component {
-//     render() {
-//         const { classes } = this.props;
-//         return (
-//             <Paper className={classes.root}>
-//                 <Table className={classes.table}>
-//                     <TableHead>
-//                         <TableRow>
-//                             <TableCell>번호</TableCell>
-//                             <TableCell>이미지</TableCell>
-//                             <TableCell>이름</TableCell>
-//                             <TableCell>생년월일</TableCell>
-//                             <TableCell>성별</TableCell>
-//                             <TableCell>직업</TableCell>
-//                         </TableRow>
-//                     </TableHead>
-//                     <TableBody>
-//                         {customers.map(c => {
-//                             return <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />
-//                         })}
-//                     </TableBody>
-//                 </Table>
-//             </Paper>
-//         );
-//     }
-// }
-
-// export default withStyles(styles)(App3);
-
-
-import React, { Component } from "react";
-import Customer from "./components/Customer";
-import './App.css';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    // TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-} from "@material-ui/core";
-import { withStyles } from "@material-ui/styles";
-import createSpacing from "@material-ui/core/styles/createSpacing";
-
-const styles = {
-    root: {
-        width: '100%',
-        maginTop: createSpacing.unit * 3,
-        overflowX: "aoto"
-    },
-    test: {
-        minWidth: 1080
+class CustomerAdd extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            file: null,
+            userName: '',
+            birthday: '',
+            gender: '',
+            job: '',
+            fileName: ''
+        }
+        this.handleFormSubmit = this.handleFormSubmit.bind(this)
+        this.handleFileChange = this.handleFileChange.bind(this)
+        this.handleValueChange = this.handleValueChange.bind(this)
+        this.addCustomer = this.addCustomer.bind(this)
     }
-};
 
-const customers = [
-    {
-        'id': 1,
-        'image': 'https://placeimg.com/64/64/1',
-        'name': 'jsy',
-        'brithday': '990112',
-        'gender': 'man',
-        'job': 'student',
-    },
-    {
-        'id': 2,
-        'image': 'https://placeimg.com/64/64/2',
-        'name': 'jje',
-        'brithday': '980317',
-        'gender': 'female',
-        'job': 'student',
-    },
-    {
-        'id': 3,
-        'image': 'https://placeimg.com/64/64/3',
-        'name': 'none',
-        'brithday': 'none',
-        'gender': 'none',
-        'job': 'none'
+    handleFormSubmit(e) {
+        e.preventDefault()
+        this.addCustomer()
+            .then((response) => {
+                console.log(response.data);
+            })
     }
-]
+    handleFileChange(e) {
+        this.setState({
+            file: e.target.files[0],
+            fileName: e.target.value
+        });
+    }
+    handleValueChange(e) {
+        let nextState = {};
+        nextState[e.target.name] = e.target.value;
+        this.setState(nextState);
+    }
+    addCustomer() {
+        const url = '/api/customers';
+        const formData = new FormData();
+        formData.append('image', this.state.file)
+        formData.append('name', this.state.userName)
+        formData.append('birthday', this.state.birthday)
+        formData.append('gender', this.state.gender)
+        formData.append('job', this.state.job)
+        const config = {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        }
+        return post(url, formData, config)
+    }
 
-
-class App3 extends Component {
     render() {
-        const { classes } = this.props;
         return (
-            <Paper className={classes.root}>
-                <Table className={classes.test}>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>번호</TableCell>
-                            <TableCell>이미지</TableCell>
-                            <TableCell>이름</TableCell>
-                            <TableCell>생년원일</TableCell>
-                            <TableCell>성별</TableCell>
-                            <TableCell>직업</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {customers.map(c => {
-                            return ( <Customer key={c.id}
-                                    id={c.id}
-                                    image={c.image}
-                                    name={c.name}
-                                    brithday={c.brithday}
-                                    gender={c.gender}
-                                    job={c.job} />
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </Paper>
-        );
+            <form onSubmit={this.handleFormSubmit}>
+                <h1>고객 추가</h1>
+                프로필 이미지: <input type="file" name="file" file={this.state.file} value={this.state.fileName} onChange={this.handleFileChange} /><br />
+                이름: <input type="text" name="userName" value={this.state.userName} onChange={this.handleValueChange} /><br />
+                생년월일: <input type="text" name="birthday" value={this.state.birthday} onChange={this.handleValueChange} /><br />
+                성별: <input type="text" name="gender" value={this.state.gender} onChange={this.handleValueChange} /><br />
+                직업: <input type="text" name="job" value={this.state.job} onChange={this.handleValueChange} /><br />
+                <button type="submit">추가하기</button>
+            </form>
+        )
     }
 }
 
-export default withStyles(styles)(App3);
+export default CustomerAdd;
+
+
