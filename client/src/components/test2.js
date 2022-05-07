@@ -1,72 +1,64 @@
-import React from 'react'
-import { post } from 'axios';
+import React from 'react';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import Typography from '@material-ui/core/Typography';
 
-class CustomerAdd extends React.Component {
+class CustomerDelete extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
-            file: null,
-            userName: '',
-            birthday: '',
-            gender: '',
-            job: '',
-            fileName: ''
+            open: false
         }
-        this.handleFormSubmit = this.handleFormSubmit.bind(this)
-        this.handleFileChange = this.handleFileChange.bind(this)
-        this.handleValueChange = this.handleValueChange.bind(this)
-        this.addCustomer = this.addCustomer.bind(this)
+        this.handleClickOpen = this.handleClickOpen.bind(this)
+        this.handleClose = this.handleClose.bind(this);
     }
 
-    handleFormSubmit(e) {
-        e.preventDefault()
-        this.addCustomer()
-            .then((response) => {
-                console.log(response.data);
-            })
-    }
-    handleFileChange(e) {
+    handleClickOpen() {
         this.setState({
-            file: e.target.files[0],
-            fileName: e.target.value
+            open: true
         });
     }
-    handleValueChange(e) {
-        let nextState = {};
-        nextState[e.target.name] = e.target.value;
-        this.setState(nextState);
+    handleClose() {
+        this.setState({
+            open: false
+        })
     }
-    addCustomer() {
-        const url = '/api/customers';
-        const formData = new FormData();
-        formData.append('image', this.state.file)
-        formData.append('name', this.state.userName)
-        formData.append('birthday', this.state.birthday)
-        formData.append('gender', this.state.gender)
-        formData.append('job', this.state.job)
-        const config = {
-            headers: {
-                'content-type': 'multipart/form-data'
-            }
-        }
-        return post(url, formData, config)
+
+    deleteCustomer(id) {
+        const url = '/api/customers/' + id;
+        fetch(url, {
+            method: 'DELETE'
+        });
+        this.props.stateRefresh();
     }
 
     render() {
         return (
-            <form onSubmit={this.handleFormSubmit}>
-                <h1>고객 추가</h1>
-                프로필 이미지: <input type="file" name="file" file={this.state.file} value={this.state.fileName} onChange={this.handleFileChange} /><br />
-                이름: <input type="text" name="userName" value={this.state.userName} onChange={this.handleValueChange} /><br />
-                생년월일: <input type="text" name="birthday" value={this.state.birthday} onChange={this.handleValueChange} /><br />
-                성별: <input type="text" name="gender" value={this.state.gender} onChange={this.handleValueChange} /><br />
-                직업: <input type="text" name="job" value={this.state.job} onChange={this.handleValueChange} /><br />
-                <button type="submit">추가하기</button>
-            </form>
+            <div>
+                <Button variant="contained" color="secondary" onClick={this.handleClickOpen}>
+                    삭제
+                </Button>
+                <Dialog onClose={this.handleClose} open={this.state.open}>
+                    <DialogTitle onClose={this.handleClose}>
+                        삭제 경고
+                    </DialogTitle>
+                    <DialogContent>
+                        <Typography gutterBottom>
+                            선택한 고객 정보가 삭제됩니다.
+                        </Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button variant="contained" color="primary" onClick={(e) => { this.deleteCustomer(this.props.id) }}>삭제</Button>
+                        <Button variant="outlined" color="primary" onClick={this.handleClose}>닫기</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
         )
     }
 }
 
-export default CustomerAdd;
-
-
+export default CustomerDelete;
