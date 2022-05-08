@@ -1,23 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import './index.css';
-// import App from './App';
-// import App2 from './App2';
 import App3 from './App3';
-// import UserTable from './test.js';
-import reportWebVitals from './reportWebVitals';
+import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    {/* <App /> */}
-  {/* <App2 /> */}
-  <App3 />
-  {/* {<UserTable />} */}
-  </React.StrictMode>
-);
+const theme = createTheme({
+  typography: {
+    fontFamily: '"Noto Sans KR", serif',
+  },
+});
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+ReactDOM.render(<MuiThemeProvider theme={theme}><App3 /></MuiThemeProvider>, document.getElementById('root'));
